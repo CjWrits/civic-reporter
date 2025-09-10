@@ -4,11 +4,16 @@ export const APP_CONFIG = {
   version: '1.0.0',
 } as const;
 
+// backend: these are the api endpoints you need to create
+// update the base url when you deploy your backend server
 export const API_ENDPOINTS = {
-  issues: '/api/issues',
-  auth: '/api/auth',
-  users: '/api/users',
+  issues: '/api/issues', // crud operations for issues
+  auth: '/api/auth', // login/logout/register endpoints
+  users: '/api/users', // user management endpoints
 } as const;
+
+// add your backend base url here when ready
+// export const API_BASE_URL = 'https://backendurl.com';
 
 export const STORAGE_KEYS = {
   user: 'civic-user',

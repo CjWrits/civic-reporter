@@ -2,28 +2,34 @@ import { Issue, UserLocation } from '@/types';
 import { IssuesAPI } from '@/api/issues';
 import { ISSUE_STATUSES } from '@/config/constants';
 
+// backend: this contains business logic for issues
+// the IssuesAPI calls will be replaced with your http requests
 export class IssueService {
+  // this creates a new issue report
+  // the photo will be base64 string that you need to save as file
   static createIssue(data: {
     title: string;
     description: string;
     category: string;
-    photo?: string;
-    userLocation: UserLocation;
+    photo?: string; // this is base64 image data
+    userLocation: UserLocation; // gps coordinates
     address?: string;
   }): Issue {
+    // you can generate uuid instead of timestamp for id
     const issue: Issue = {
-      id: Date.now().toString(),
+      id: Date.now().toString(), // replace with uuid
       title: data.title.trim(),
       description: data.description.trim(),
-      photo: data.photo,
-      coordinates: data.userLocation,
-      status: ISSUE_STATUSES.SUBMITTED,
+      photo: data.photo, // save this base64 as image file
+      coordinates: data.userLocation, //store lat/lng in database
+      status: ISSUE_STATUSES.SUBMITTED, // default status for new issues
       category: data.category,
       timestamp: Date.now(),
       createdAt: new Date().toISOString(),
       address: data.address?.trim(),
     };
 
+    // this will call your POST /api/issues endpoint
     IssuesAPI.create(issue);
     return issue;
   }

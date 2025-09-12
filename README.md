@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-## Features
+## Featurescd community-catch
 
 - User/Admin login system
 - Issue reporting with GPS location

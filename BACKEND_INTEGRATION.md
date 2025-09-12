@@ -79,6 +79,5 @@ The frontend sends photos as base64 strings
 
 9. Environment Variables
 add to env :-
-```
 VITE_API_BASE_URL=https://backendurl.com
-```
+

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Issue, UserLocation } from '@/types';
 import { MapPin } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface MapProps {
   issues: Issue[];
@@ -14,6 +15,20 @@ export const Map: React.FC<MapProps> = ({ issues, userLocation, focusedIssue, cl
   const map = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const userMarkerRef = useRef<any>(null);
+  const { t } = useTranslation();
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'submitted':
+        return t('submitted');
+      case 'in_progress':
+        return t('inProgress');
+      case 'completed':
+        return t('completed');
+      default:
+        return status;
+    }
+  };
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -63,7 +78,7 @@ export const Map: React.FC<MapProps> = ({ issues, userLocation, focusedIssue, cl
 
       userMarkerRef.current = L.marker([userLocation.lat, userLocation.lng])
         .addTo(map.current)
-        .bindPopup('📍 Your Current Location')
+        .bindPopup(`📍 ${t('yourLocation')}`)
         .openPopup();
 
       map.current.setView([userLocation.lat, userLocation.lng], 15);
@@ -94,7 +109,7 @@ export const Map: React.FC<MapProps> = ({ issues, userLocation, focusedIssue, cl
             <p style="font-size: 12px; color: #666; margin-bottom: 8px;">${issue.category}</p>
             <p style="font-size: 14px; margin-bottom: 8px;">${issue.description}</p>
             <div style="font-size: 11px; color: #888;">
-              <div>Status: ${issue.status.replace('_', ' ')}</div>
+              <div>Status: ${getStatusText(issue.status)}</div>
               <div>Location: ${issue.coordinates.lat.toFixed(4)}, ${issue.coordinates.lng.toFixed(4)}</div>
             </div>
           </div>
@@ -132,22 +147,22 @@ export const Map: React.FC<MapProps> = ({ issues, userLocation, focusedIssue, cl
     <div className={`relative ${className}`}>
       <div ref={mapContainer} className="w-full h-full rounded-lg overflow-hidden border border-border" />
       <div className="absolute top-4 left-4 glass-dark border border-border rounded-lg p-3">
-        <h4 className="text-sm font-semibold mb-2 text-foreground">Map Legend</h4>
+        <h4 className="text-sm font-semibold mb-2 text-foreground">{t('mapLegend')}</h4>
         <div className="flex items-center gap-2 text-sm mb-2">
           <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-xs">📍</div>
-          <span className="text-foreground">Your Location</span>
+          <span className="text-foreground">{t('yourLocationMarker')}</span>
         </div>
         <div className="flex items-center gap-2 text-sm mb-1">
           <div className="w-4 h-4 bg-yellow-500 rounded-full border border-white shadow-sm flex items-center justify-center text-xs">⚠️</div>
-          <span className="text-foreground">Submitted</span>
+          <span className="text-foreground">{t('submitted')}</span>
         </div>
         <div className="flex items-center gap-2 text-sm mb-1">
           <div className="w-4 h-4 bg-blue-600 rounded-full border border-white shadow-sm flex items-center justify-center text-xs">🔄</div>
-          <span className="text-foreground">In Progress</span>
+          <span className="text-foreground">{t('inProgress')}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <div className="w-4 h-4 bg-green-500 rounded-full border border-white shadow-sm flex items-center justify-center text-xs">✅</div>
-          <span className="text-foreground">Completed</span>
+          <span className="text-foreground">{t('completed')}</span>
         </div>
       </div>
     </div>

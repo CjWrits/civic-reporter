@@ -18,10 +18,13 @@ import {
   RefreshCw,
   LogOut,
   Sun,
-  Moon
+  Moon,
+  Languages
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/hooks/useTheme';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface IndexProps {
   onLogout?: () => void;
@@ -34,6 +37,8 @@ const Index = ({ onLogout }: IndexProps) => {
   const [focusedIssue, setFocusedIssue] = useState<Issue | null>(null);
   const { toast } = useToast();
   const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
+  const { t } = useTranslation();
 
   const handleSubmitIssue = (issue: Issue) => {
     saveIssue(issue);
@@ -69,35 +74,39 @@ const Index = ({ onLogout }: IndexProps) => {
                 <MapPin className="h-4 w-4 sm:h-6 sm:w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-foreground">Civic Reporter</h1>
+                <h1 className="text-lg sm:text-xl font-bold text-foreground">{t('appName')}</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
-                  Report & track community issues
+                  {t('appDescription')}
                 </p>
               </div>
             </div>
             
             {/* Location Status */}
             <div className="flex items-center gap-2 sm:gap-4">
+              <Button variant="outline" size="sm" onClick={toggleLanguage}>
+                <Languages className="h-4 w-4" />
+                <span className="ml-1 text-xs">{language === 'en' ? 'हि' : 'EN'}</span>
+              </Button>
               <Button variant="outline" size="sm" onClick={toggleTheme}>
                 {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
               {onLogout && (
                 <Button variant="outline" size="sm" onClick={onLogout}>
                   <LogOut className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Logout</span>
+                  <span className="hidden sm:inline">{t('logout')}</span>
                 </Button>
               )}
               <div className="flex items-center gap-1 sm:gap-2">
               {loading && (
                 <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
                   <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
-                  <span className="hidden sm:inline">Getting location...</span>
+                  <span className="hidden sm:inline">{t('gettingLocation')}</span>
                 </div>
               )}
               {error && (
                 <div className="flex items-center gap-1 sm:gap-2">
                   <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
-                  <span className="text-xs sm:text-sm text-destructive hidden sm:inline">Location error</span>
+                  <span className="text-xs sm:text-sm text-destructive hidden sm:inline">{t('locationError')}</span>
                   <Button
                     variant="outline"
                     size="sm"
@@ -110,14 +119,14 @@ const Index = ({ onLogout }: IndexProps) => {
               {location && location.accuracy && location.accuracy > 1000 && (
                 <div className="flex items-center gap-1 sm:gap-2">
                   <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
-                  <span className="text-xs sm:text-sm text-yellow-600 hidden sm:inline">Low accuracy ({Math.round(location.accuracy)}m)</span>
+                  <span className="text-xs sm:text-sm text-yellow-600 hidden sm:inline">{t('lowAccuracy')} ({Math.round(location.accuracy)}m)</span>
                 </div>
               )}
               {location && (
                 <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
                   <div className="w-2 h-2 bg-green-500 rounded-full glow-primary"></div>
-                  <span className="hidden sm:inline">Location active</span>
-                  <span className="sm:hidden">GPS</span>
+                  <span className="hidden sm:inline">{t('locationActive')}</span>
+                  <span className="sm:hidden">{t('gps')}</span>
                 </div>
               )}
               </div>
@@ -133,18 +142,18 @@ const Index = ({ onLogout }: IndexProps) => {
           <TabsList className="grid w-full grid-cols-3 glass-dark h-12 sm:h-10">
             <TabsTrigger value="map" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
               <MapIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Map View</span>
-              <span className="sm:hidden">Map</span>
+              <span className="hidden sm:inline">{t('mapView')}</span>
+              <span className="sm:hidden">{t('map')}</span>
             </TabsTrigger>
             <TabsTrigger value="report" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
               <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Report Issue</span>
-              <span className="sm:hidden">Report</span>
+              <span className="hidden sm:inline">{t('reportIssue')}</span>
+              <span className="sm:hidden">{t('report')}</span>
             </TabsTrigger>
             <TabsTrigger value="issues" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
               <List className="h-4 w-4" />
-              <span className="hidden sm:inline">My Issues ({issues.length})</span>
-              <span className="sm:hidden">Issues ({issues.length})</span>
+              <span className="hidden sm:inline">{t('myIssues')} ({issues.length})</span>
+              <span className="sm:hidden">{t('issues')} ({issues.length})</span>
             </TabsTrigger>
           </TabsList>
 
@@ -179,23 +188,23 @@ const Index = ({ onLogout }: IndexProps) => {
               />
               <Card className="glass-dark border-border lg:hidden">
                 <CardContent className="p-4">
-                  <h3 className="text-base font-semibold mb-3">Quick Tips</h3>
+                  <h3 className="text-base font-semibold mb-3">{t('quickTips')}</h3>
                   <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <span className="text-primary">📝</span>
-                      <span>Be specific</span>
+                      <span>{t('beSpecific')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-primary">📸</span>
-                      <span>Add photos</span>
+                      <span>{t('addPhotos')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-primary">📍</span>
-                      <span>Enable location</span>
+                      <span>{t('enableLocation')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-primary">⚠️</span>
-                      <span>Stay safe</span>
+                      <span>{t('staySafe')}</span>
                     </div>
                   </div>
                 </CardContent>

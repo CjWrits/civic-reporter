@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Clock, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react';
 import { Issue } from '@/types';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface IssuesListProps {
   issues: Issue[];
@@ -18,6 +19,20 @@ export const IssuesList: React.FC<IssuesListProps> = ({
   onFocusIssue,
   className,
 }) => {
+  const { t } = useTranslation();
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'submitted':
+        return t('submitted');
+      case 'in_progress':
+        return t('inProgress');
+      case 'completed':
+        return t('completed');
+      default:
+        return status;
+    }
+  };
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
@@ -57,7 +72,7 @@ export const IssuesList: React.FC<IssuesListProps> = ({
     return (
       <Card className={`glass-dark border-border ${className}`}>
         <CardHeader>
-          <CardTitle>My Issues</CardTitle>
+          <CardTitle>{t('myIssues')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
@@ -72,7 +87,7 @@ export const IssuesList: React.FC<IssuesListProps> = ({
   return (
     <Card className={`glass-dark border-border ${className}`}>
       <CardHeader>
-        <CardTitle>My Issues ({issues.length})</CardTitle>
+        <CardTitle>{t('myIssues')} ({issues.length})</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 max-h-96 overflow-y-auto">
         {issues.map((issue) => (
@@ -92,7 +107,7 @@ export const IssuesList: React.FC<IssuesListProps> = ({
               <div className="flex items-center gap-2 ml-2">
                 <Badge className={`text-xs ${getStatusColor(issue.status)}`}>
                   {getStatusIcon(issue.status)}
-                  <span className="ml-1">{issue.status}</span>
+                  <span className="ml-1">{getStatusText(issue.status)}</span>
                 </Badge>
                 <Button
                   variant="ghost"
@@ -131,7 +146,7 @@ export const IssuesList: React.FC<IssuesListProps> = ({
               onClick={() => onFocusIssue(issue)}
               className="w-full mt-3 glass-dark"
             >
-              View on Map
+              {t('viewOnMap')}
             </Button>
           </div>
         ))}

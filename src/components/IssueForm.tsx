@@ -8,24 +8,13 @@ import { PhotoUpload } from './PhotoUpload';
 import { MapPin, Send } from 'lucide-react';
 import { Issue, UserLocation } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface IssueFormProps {
   onSubmit: (issue: Issue) => void;
   userLocation: UserLocation | null;
   className?: string;
 }
-
-const categories = [
-  'Roads & Potholes',
-  'Street Lighting',
-  'Sanitation',
-  'Public Transportation',
-  'Parks & Recreation',
-  'Traffic Signals',
-  'Sidewalks',
-  'Drainage',
-  'Other'
-];
 
 export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, className }) => {
   const [title, setTitle] = useState('');
@@ -34,6 +23,19 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
   const [photo, setPhoto] = useState<string | null>(null);
   const [customLocation, setCustomLocation] = useState('');
   const { toast } = useToast();
+  const { t } = useTranslation();
+
+  const categories = [
+    { value: 'Roads & Potholes', label: t('roadsAndPotholes') },
+    { value: 'Street Lighting', label: t('streetLighting') },
+    { value: 'Sanitation', label: t('sanitation') },
+    { value: 'Public Transportation', label: t('publicTransportation') },
+    { value: 'Parks & Recreation', label: t('parksAndRecreation') },
+    { value: 'Traffic Signals', label: t('trafficSignals') },
+    { value: 'Sidewalks', label: t('sidewalks') },
+    { value: 'Drainage', label: t('drainage') },
+    { value: 'Other', label: t('other') }
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,62 +91,62 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5 text-primary" />
-          Report New Issue
+          {t('reportIssue')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Issue Title *</Label>
+            <Label htmlFor="title">{t('issueTitle')} *</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Brief description of the issue"
+              placeholder={t('issueTitle')}
               className="glass-dark"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category *</Label>
+            <Label htmlFor="category">{t('category')} *</Label>
             <select
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full p-2 glass-dark rounded-md border border-border bg-background text-foreground"
             >
-              <option value="">Select a category</option>
+              <option value="">{t('selectCategory')}</option>
               {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">{t('description')} *</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Provide detailed description of the issue"
+              placeholder={t('issueDescription')}
               rows={4}
               className="glass-dark"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Custom Location (optional)</Label>
+            <Label htmlFor="location">{t('optionalAddress')}</Label>
             <Input
               id="location"
               value={customLocation}
               onChange={(e) => setCustomLocation(e.target.value)}
-              placeholder="e.g., Near Central Park entrance"
+              placeholder={t('optionalAddress')}
               className="glass-dark"
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Photo (optional)</Label>
+            <Label>{t('photo')} (optional)</Label>
             <PhotoUpload photo={photo} onPhotoChange={setPhoto} />
           </div>
 
@@ -154,12 +156,12 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
             disabled={!userLocation}
           >
             <Send className="h-4 w-4 mr-2" />
-            Report Issue
+            {t('submitIssue')}
           </Button>
 
           {!userLocation && (
             <p className="text-sm text-muted-foreground text-center">
-              Please enable location access to report issues
+              {t('enableLocation')}
             </p>
           )}
         </form>

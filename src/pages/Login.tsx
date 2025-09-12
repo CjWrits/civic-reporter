@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MapPin, User, Shield, Sun, Moon } from 'lucide-react';
+import { MapPin, User, Shield, Sun, Moon, Languages } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/hooks/useTheme';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface LoginProps {
   onLogin: (userType: 'user' | 'admin') => void;
@@ -17,6 +19,8 @@ const Login = ({ onLogin }: LoginProps) => {
   const [adminCredentials, setAdminCredentials] = useState({ email: '', password: '' });
   const { toast } = useToast();
   const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
+  const { t } = useTranslation();
 
   const handleUserLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +52,11 @@ const Login = ({ onLogin }: LoginProps) => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex gap-2">
+        <Button variant="outline" size="sm" onClick={toggleLanguage}>
+          <Languages className="h-4 w-4" />
+          <span className="ml-1 text-xs">{language === 'en' ? 'हि' : 'EN'}</span>
+        </Button>
         <Button variant="outline" size="sm" onClick={toggleTheme}>
           {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
@@ -58,21 +66,21 @@ const Login = ({ onLogin }: LoginProps) => {
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-3 sm:mb-4 glow-primary">
             <MapPin className="h-6 w-6 sm:h-8 sm:w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Civic Reporter</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">Report & track community issues</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('appName')}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{t('appDescription')}</p>
         </div>
 
         <Tabs defaultValue="user" className="w-full">
           <TabsList className="grid w-full grid-cols-2 glass-dark h-12 sm:h-10">
             <TabsTrigger value="user" className="flex items-center gap-1 sm:gap-2 text-sm">
               <User className="h-4 w-4" />
-              <span className="hidden sm:inline">User Login</span>
-              <span className="sm:hidden">User</span>
+              <span className="hidden sm:inline">{t('userLogin')}</span>
+              <span className="sm:hidden">{t('user')}</span>
             </TabsTrigger>
             <TabsTrigger value="admin" className="flex items-center gap-1 sm:gap-2 text-sm">
               <Shield className="h-4 w-4" />
-              <span className="hidden sm:inline">Admin Login</span>
-              <span className="sm:hidden">Admin</span>
+              <span className="hidden sm:inline">{t('adminLogin')}</span>
+              <span className="sm:hidden">{t('admin')}</span>
             </TabsTrigger>
           </TabsList>
 

@@ -214,7 +214,7 @@ const Index = ({ onLogout }: IndexProps) => {
 
           {/* Issues List */}
           <TabsContent value="issues">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <IssuesList
                 issues={issues}
                 onDeleteIssue={handleDeleteIssue}

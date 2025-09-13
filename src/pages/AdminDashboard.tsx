@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import { Map } from '@/components/Map';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
@@ -20,7 +21,9 @@ import {
   Play,
   Sun,
   Moon,
-  Languages
+  Languages,
+  Search,
+  X
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/hooks/useTheme';
@@ -36,10 +39,23 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
   const { issues, updateIssueStatus } = useLocalStorage();
   const [activeTab, setActiveTab] = useState('map');
   const [focusedIssue, setFocusedIssue] = useState<Issue | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage } = useLanguage();
   const { t } = useTranslation();
+
+  // Filter issues based on search query
+  const filteredIssues = useMemo(() => {
+    if (!searchQuery.trim()) return issues;
+    
+    return issues.filter(issue => 
+      issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      issue.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      issue.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (issue.address && issue.address.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  }, [issues, searchQuery]);
 
   const handleStatusUpdate = (issueId: string, newStatus: Issue['status']) => {
     updateIssueStatus(issueId, newStatus);
@@ -81,9 +97,9 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
   };
 
   const statusCounts = {
-    submitted: issues.filter(i => i.status === 'submitted').length,
-    in_progress: issues.filter(i => i.status === 'in_progress').length,
-    completed: issues.filter(i => i.status === 'completed').length,
+    submitted: filteredIssues.filter(i => i.status === 'submitted').length,
+    in_progress: filteredIssues.filter(i => i.status === 'in_progress').length,
+    completed: filteredIssues.filter(i => i.status === 'completed').length,
   };
 
   return (
@@ -195,7 +211,7 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
             </TabsTrigger>
             <TabsTrigger value="issues" className="flex items-center gap-2">
               <List className="h-4 w-4" />
-              {t('allIssues')} ({issues.length})
+              {t('allIssues')} ({filteredIssues.length})
             </TabsTrigger>
           </TabsList>
 
@@ -203,7 +219,7 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-300px)]">
               <div className="lg:col-span-3">
                 <Map
-                  issues={issues}
+                  issues={filteredIssues}
                   userLocation={location}
                   focusedIssue={focusedIssue}
                   className="h-full"
@@ -212,10 +228,12 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
               <div className="lg:col-span-1">
                 <Card className="glass-dark border-border h-full">
                   <CardHeader>
-                    <CardTitle className="text-lg">Recent Issues</CardTitle>
+                    <CardTitle className="text-lg">
+                      {searchQuery ? `Search Results (${filteredIssues.length})` : 'Recent Issues'}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {issues.slice(0, 5).map((issue) => (
+                    {filteredIssues.slice(0, 5).map((issue) => (
                       <div
                         key={issue.id}
                         className="p-3 rounded-lg bg-muted/20 cursor-pointer hover:bg-muted/30 transition-colors"
@@ -237,8 +255,36 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
           </TabsContent>
 
           <TabsContent value="issues">
+            {/* Search Bar - Only in Issues Tab */}
+            <div className="relative max-w-md mb-6">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search issues by title, description, category, or address..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-10 glass-dark border-border"
+              />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+            
+            {searchQuery && (
+              <div className="mb-4 p-3 bg-muted/20 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  Showing {filteredIssues.length} result{filteredIssues.length !== 1 ? 's' : ''} for "{searchQuery}"
+                </p>
+              </div>
+            )}
             <div className="space-y-4">
-              {issues.map((issue) => (
+              {filteredIssues.map((issue) => (
                 <Card key={issue.id} className="glass-dark border-border">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between">
@@ -252,6 +298,12 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
                         </div>
                         <h3 className="text-lg font-semibold mb-2">{issue.title}</h3>
                         <p className="text-muted-foreground mb-3">{issue.description}</p>
+                        {issue.address && (
+                          <p className="text-sm text-muted-foreground mb-2">
+                            <MapPin className="h-3 w-3 inline mr-1" />
+                            Address: {issue.address}
+                          </p>
+                        )}
                         <p className="text-sm text-muted-foreground">
                           Reported: {new Date(issue.createdAt).toLocaleDateString()}
                         </p>
@@ -278,12 +330,28 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
                   </CardContent>
                 </Card>
               ))}
-              {issues.length === 0 && (
+              {filteredIssues.length === 0 && (
                 <Card className="glass-dark border-border">
                   <CardContent className="p-12 text-center">
                     <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No Issues Found</h3>
-                    <p className="text-muted-foreground">No community issues have been reported yet.</p>
+                    <h3 className="text-lg font-semibold mb-2">
+                      {searchQuery ? 'No Matching Issues Found' : 'No Issues Found'}
+                    </h3>
+                    <p className="text-muted-foreground">
+                      {searchQuery 
+                        ? `No issues match your search for "${searchQuery}". Try different keywords.`
+                        : 'No community issues have been reported yet.'
+                      }
+                    </p>
+                    {searchQuery && (
+                      <Button
+                        variant="outline"
+                        onClick={() => setSearchQuery('')}
+                        className="mt-4"
+                      >
+                        Clear Search
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               )}

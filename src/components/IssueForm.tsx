@@ -21,7 +21,7 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [photo, setPhoto] = useState<string | null>(null);
-  const [customLocation, setCustomLocation] = useState('');
+  const [address, setAddress] = useState('');
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -40,10 +40,10 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title.trim() || !description.trim() || !category) {
+    if (!title.trim() || !description.trim() || !category || !address.trim()) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields including address",
         variant: "destructive",
       });
       return;
@@ -68,7 +68,7 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
       category,
       timestamp: Date.now(),
       createdAt: new Date().toISOString(),
-      address: customLocation.trim() || undefined,
+      address: address.trim(),
     };
 
     onSubmit(issue);
@@ -78,7 +78,7 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
     setDescription('');
     setCategory('');
     setPhoto(null);
-    setCustomLocation('');
+    setAddress('');
 
     toast({
       title: "Issue Reported",
@@ -135,13 +135,14 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">{t('optionalAddress')}</Label>
+            <Label htmlFor="address">{t('address')} *</Label>
             <Input
-              id="location"
-              value={customLocation}
-              onChange={(e) => setCustomLocation(e.target.value)}
-              placeholder={t('optionalAddress')}
+              id="address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Enter the full address of the issue location"
               className="glass-dark"
+              required
             />
           </div>
 

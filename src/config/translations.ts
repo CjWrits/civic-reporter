@@ -91,6 +91,10 @@ export const translations = {
     pendingIssues: 'Pending Issues',
     resolvedIssues: 'Resolved Issues',
     issueManagement: 'Issue Management',
+    overview: 'Overview',
+    allIssues: 'All Issues',
+    markInProgress: 'Mark In Progress',
+    markCompleted: 'Mark Completed',
     
     // Map Legend
     mapLegend: 'Map Legend',
@@ -189,6 +193,10 @@ export const translations = {
     pendingIssues: 'लंबित समस्याएं',
     resolvedIssues: 'हल की गई समस्याएं',
     issueManagement: 'समस्या प्रबंधन',
+    overview: 'अवलोकन',
+    allIssues: 'सभी समस्याएं',
+    markInProgress: 'प्रगति में चिह्नित करें',
+    markCompleted: 'पूर्ण चिह्नित करें',
     
     // Map Legend
     mapLegend: 'मैप लेजेंड',

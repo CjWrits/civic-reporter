@@ -19,10 +19,13 @@ import {
   Clock,
   Play,
   Sun,
-  Moon
+  Moon,
+  Languages
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/hooks/useTheme';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -35,6 +38,8 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
   const [focusedIssue, setFocusedIssue] = useState<Issue | null>(null);
   const { toast } = useToast();
   const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
+  const { t } = useTranslation();
 
   const handleStatusUpdate = (issueId: string, newStatus: Issue['status']) => {
     updateIssueStatus(issueId, newStatus);
@@ -92,9 +97,9 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
                 <MapPin className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">Admin Dashboard</h1>
+                <h1 className="text-xl font-bold text-foreground">{t('adminDashboard')}</h1>
                 <p className="text-sm text-muted-foreground">
-                  Manage community issues
+                  {t('issueManagement')}
                 </p>
               </div>
             </div>
@@ -104,28 +109,32 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
               {loading && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Getting location...
+                  {t('gettingLocation')}
                 </div>
               )}
               {error && (
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 text-destructive" />
-                  <span className="text-sm text-destructive">Location error</span>
+                  <span className="text-sm text-destructive">{t('locationError')}</span>
                 </div>
               )}
               {location && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="w-2 h-2 bg-green-500 rounded-full glow-primary"></div>
-                  Location active
+                  {t('locationActive')}
                 </div>
               )}
               
+              <Button variant="outline" size="sm" onClick={toggleLanguage}>
+                <Languages className="h-4 w-4" />
+                <span className="ml-1 text-xs">{language === 'en' ? 'हि' : 'EN'}</span>
+              </Button>
               <Button variant="outline" size="sm" onClick={toggleTheme}>
                 {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
               <Button variant="outline" onClick={onLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                {t('logout')}
               </Button>
             </div>
           </div>
@@ -139,7 +148,7 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Submitted</p>
+                  <p className="text-sm text-muted-foreground">{t('submitted')}</p>
                   <p className="text-2xl font-bold">{statusCounts.submitted}</p>
                 </div>
                 <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
@@ -153,7 +162,7 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">In Progress</p>
+                  <p className="text-sm text-muted-foreground">{t('inProgress')}</p>
                   <p className="text-2xl font-bold">{statusCounts.in_progress}</p>
                 </div>
                 <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
@@ -167,7 +176,7 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Completed</p>
+                  <p className="text-sm text-muted-foreground">{t('completed')}</p>
                   <p className="text-2xl font-bold">{statusCounts.completed}</p>
                 </div>
                 <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -182,11 +191,11 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
           <TabsList className="grid w-full grid-cols-2 glass-dark">
             <TabsTrigger value="map" className="flex items-center gap-2">
               <MapIcon className="h-4 w-4" />
-              Map View
+              {t('mapView')}
             </TabsTrigger>
             <TabsTrigger value="issues" className="flex items-center gap-2">
               <List className="h-4 w-4" />
-              All Issues ({issues.length})
+              {t('allIssues')} ({issues.length})
             </TabsTrigger>
           </TabsList>
 
@@ -253,7 +262,7 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
                           size="sm"
                           onClick={() => handleFocusIssue(issue)}
                         >
-                          View on Map
+                          {t('viewOnMap')}
                         </Button>
                         {issue.status !== 'completed' && (
                           <Button

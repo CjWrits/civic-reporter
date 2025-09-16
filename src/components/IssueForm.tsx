@@ -9,6 +9,7 @@ import { MapPin, Send } from 'lucide-react';
 import { Issue, UserLocation } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
+import { AuthService } from '@/auth/authService';
 
 interface IssueFormProps {
   onSubmit: (issue: Issue) => void;
@@ -58,8 +59,20 @@ export const IssueForm: React.FC<IssueFormProps> = ({ onSubmit, userLocation, cl
       return;
     }
 
+    // Get current user to link issue
+    const currentUser = AuthService.getCurrentUser();
+    if (!currentUser) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to report issues",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const issue: Issue = {
       id: Date.now().toString(),
+      userId: currentUser.id,  // Link to current user
       title: title.trim(),
       description: description.trim(),
       photo,

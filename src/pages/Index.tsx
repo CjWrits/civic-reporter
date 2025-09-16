@@ -32,7 +32,7 @@ interface IndexProps {
 
 const Index = ({ onLogout }: IndexProps) => {
   const { location, error, loading } = useGeolocation();
-  const { issues, saveIssue, deleteIssue } = useLocalStorage();
+  const { myIssues, saveIssue, deleteIssue, canModifyIssue } = useLocalStorage();
   const [activeTab, setActiveTab] = useState('map');
   const [focusedIssue, setFocusedIssue] = useState<Issue | null>(null);
   const { toast } = useToast();
@@ -152,8 +152,8 @@ const Index = ({ onLogout }: IndexProps) => {
             </TabsTrigger>
             <TabsTrigger value="issues" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
               <List className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('myIssues')} ({issues.length})</span>
-              <span className="sm:hidden">{t('issues')} ({issues.length})</span>
+              <span className="hidden sm:inline">{t('myIssues')} ({myIssues.length})</span>
+              <span className="sm:hidden">{t('issues')} ({myIssues.length})</span>
             </TabsTrigger>
           </TabsList>
 
@@ -162,7 +162,7 @@ const Index = ({ onLogout }: IndexProps) => {
             <div className="flex flex-col lg:grid lg:grid-cols-4 gap-4 lg:gap-6 h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)]">
               <div className="lg:col-span-3 h-64 sm:h-80 lg:h-full">
                 <Map
-                  issues={issues}
+                  issues={myIssues}
                   userLocation={location}
                   focusedIssue={focusedIssue}
                   className="h-full"
@@ -170,7 +170,7 @@ const Index = ({ onLogout }: IndexProps) => {
               </div>
               <div className="lg:col-span-1 flex-1 lg:h-full">
                 <IssuesList
-                  issues={issues}
+                  issues={myIssues}
                   onDeleteIssue={handleDeleteIssue}
                   onFocusIssue={handleFocusIssue}
                   className="h-full max-h-64 lg:max-h-none"
@@ -216,7 +216,7 @@ const Index = ({ onLogout }: IndexProps) => {
           <TabsContent value="issues">
             <div className="max-w-6xl mx-auto">
               <IssuesList
-                issues={issues}
+                issues={myIssues}
                 onDeleteIssue={handleDeleteIssue}
                 onFocusIssue={handleFocusIssue}
               />

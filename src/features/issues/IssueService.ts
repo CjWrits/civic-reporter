@@ -1,6 +1,7 @@
 import { Issue, UserLocation } from '@/types';
 import { IssuesAPI } from '@/api/issues';
 import { ISSUE_STATUSES } from '@/config/constants';
+import { AuthService } from '@/auth/authService';
 
 // backend: this contains business logic for issues
 // the IssuesAPI calls will be replaced with your http requests
@@ -15,9 +16,16 @@ export class IssueService {
     userLocation: UserLocation; // gps coordinates
     address?: string;
   }): Issue {
+    // Get current user to link issue to them
+    const currentUser = AuthService.getCurrentUser();
+    if (!currentUser) {
+      throw new Error('User must be logged in to create issues');
+    }
+
     // you can generate uuid instead of timestamp for id
     const issue: Issue = {
       id: Date.now().toString(), // replace with uuid
+      userId: currentUser.id,    // Link issue to current user
       title: data.title.trim(),
       description: data.description.trim(),
       photo: data.photo, // save this base64 as image file
@@ -68,5 +76,22 @@ export class IssueService {
       default:
         return currentStatus;
     }
+  }
+
+  // Get issues for current logged-in user only
+  static getMyIssues(): Issue[] {
+    const currentUser = AuthService.getCurrentUser();
+    if (!currentUser) return [];
+    
+    return this.getAllIssues().filter(issue => issue.userId === currentUser.id);
+  }
+
+  // Check if current user owns this issue
+  static canUserModifyIssue(issueId: string): boolean {
+    const currentUser = AuthService.getCurrentUser();
+    if (!currentUser) return false;
+    
+    const issue = this.getAllIssues().find(i => i.id === issueId);
+    return issue?.userId === currentUser.id || currentUser.type === 'admin';
   }
 }

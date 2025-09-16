@@ -90,6 +90,8 @@ export const Map: React.FC<MapProps> = ({ issues, userLocation, focusedIssue, cl
   useEffect(() => {
     if (!map.current) return;
 
+    console.log('Map: Received issues:', issues.length, issues);
+
     import('leaflet').then((L) => {
       markersRef.current.forEach(marker => {
         try {
@@ -100,9 +102,19 @@ export const Map: React.FC<MapProps> = ({ issues, userLocation, focusedIssue, cl
       });
       markersRef.current = [];
 
-      if (issues.length === 0) return;
+      if (issues.length === 0) {
+        console.log('Map: No issues to display');
+        return;
+      }
 
       issues.forEach((issue, index) => {
+        console.log(`Map: Creating marker ${index + 1} for issue:`, {
+          id: issue.id,
+          title: issue.title,
+          coordinates: issue.coordinates,
+          userId: issue.userId
+        });
+
         const popupContent = `
           <div style="padding: 8px; max-width: 250px;">
             <h3 style="font-weight: bold; margin-bottom: 4px;">${issue.title}</h3>
@@ -121,8 +133,9 @@ export const Map: React.FC<MapProps> = ({ issues, userLocation, focusedIssue, cl
             .bindPopup(popupContent, { maxWidth: 300 });
 
           markersRef.current.push(marker);
+          console.log(`Map: Successfully created marker ${index + 1}`);
         } catch (error) {
-          console.error('Failed to add marker:', error);
+          console.error('Failed to add marker:', error, issue);
         }
       });
     }).catch(error => {

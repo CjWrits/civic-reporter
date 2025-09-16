@@ -11,7 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface LoginProps {
-  onLogin: (userType: 'user' | 'admin') => void;
+  onLogin: (userType: 'user' | 'admin', email?: string) => void;
 }
 
 const Login = ({ onLogin }: LoginProps) => {
@@ -25,7 +25,7 @@ const Login = ({ onLogin }: LoginProps) => {
   const handleUserLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (userCredentials.email && userCredentials.password) {
-      onLogin('user');
+      onLogin('user', userCredentials.email);
       toast({
         title: "Login Successful",
         description: "Welcome to Civic Reporter!",
@@ -36,7 +36,7 @@ const Login = ({ onLogin }: LoginProps) => {
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (adminCredentials.email === 'admin@civic.com' && adminCredentials.password === 'admin123') {
-      onLogin('admin');
+      onLogin('admin', adminCredentials.email);
       toast({
         title: "Admin Login Successful",
         description: "Welcome to Admin Dashboard!",

@@ -1,5 +1,6 @@
 export interface Issue {
   id: string;
+  userId: string;        // User who created this issue
   title: string;
   description: string;
   photo?: string;
